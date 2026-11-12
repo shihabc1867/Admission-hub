@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Admission Hub">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Admission Hub</title>
+<style>
+:root{--pri:#4f46e5;--bg:#f1f5f9;--ink:#0f172a}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans Bengali','Hind Siliguri',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+header{background:var(--pri);color:#fff;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));position:sticky;top:0;z-index:10;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;max-width:1100px;margin:auto}
+h1{font-size:20px}
+.hbtns{display:flex;gap:8px}
+.btn{border:0;border-radius:10px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer;background:#fff;color:var(--pri)}
+.btn.pri{background:var(--pri);color:#fff}
+.btn.gray{background:#e2e8f0;color:#0f172a}
+.search{max-width:1100px;margin:10px auto 0}
+.search input{width:100%;padding:11px 14px;border-radius:10px;border:0;font:inherit}
+main{max-width:1100px;margin:auto;padding:18px 14px 90px}
+.bar{display:none;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.admin .bar{display:flex}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.card{border-radius:16px;overflow:hidden;cursor:pointer;border:2px solid rgba(0,0,0,.85);box-shadow:6px 6px 0 rgba(0,0,0,.85);transition:transform .12s,box-shadow .12s;position:relative}
+.card:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 rgba(0,0,0,.85)}
+.card img{width:100%;height:130px;object-fit:cover;display:block;border-bottom:2px solid rgba(0,0,0,.85)}
+.card .noimg{height:90px;display:flex;align-items:center;justify-content:center;font-size:38px;border-bottom:2px solid rgba(0,0,0,.85);background:rgba(255,255,255,.35)}
+.card .body{padding:14px}
+.card .hd{font-size:19px;font-weight:700;line-height:1.3}
+.card .tt{margin-top:6px;font-size:15px;line-height:1.45;opacity:.95}
+.ctl{display:none;position:absolute;top:8px;right:8px;gap:6px}
+.admin .ctl{display:flex}
+.ctl button{border:2px solid #000;border-radius:8px;padding:3px 8px;font:inherit;font-size:13px;cursor:pointer;background:#fff}
+.empty{text-align:center;color:#64748b;padding:50px 10px}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.modal.show{display:flex}
+.sheet{background:#fff;width:100%;max-width:700px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+@media(min-width:700px){.modal{align-items:center}.sheet{border-radius:20px}}
+.sheet .dimg{width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:12px}
+.sheet h2{font-size:22px;line-height:1.3}
+.sheet .sub{font-size:17px;margin:6px 0 12px}
+.sec{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-bottom:12px;line-height:1.6}
+.sec h4{margin-bottom:4px;color:var(--pri)}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.links a{flex:1;min-width:140px;text-align:center;text-decoration:none;padding:12px;border-radius:12px;font-weight:700;color:#fff;border:2px solid #000;box-shadow:3px 3px 0 #000}
+.a-apply{background:#16a34a}.a-result{background:#2563eb}.a-other{background:#7c3aed}
+label{display:block;font-weight:600;margin:12px 0 4px;font-size:14px}
+input[type=text],input[type=url],input[type=password],textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;font:inherit}
+.tb{display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:#e2e8f0;padding:6px;border-radius:10px 10px 0 0}
+.tb button{width:34px;height:34px;border:0;border-radius:8px;background:#fff;font-size:16px;cursor:pointer}
+.tb input[type=color]{width:34px;height:34px;border:0;padding:0;background:none;cursor:pointer}
+.ed{min-height:70px;border:1px solid #cbd5e1;border-top:0;border-radius:0 0 10px 10px;padding:10px;outline:none;line-height:1.5}
+.row{display:flex;gap:10px;margin-top:16px}
+.row .btn{flex:1}
+.note{font-size:13px;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>🎓 Admission Hub</h1>
+    <div class="hbtns">
+      <button class="btn" id="installBtn" hidden>Install</button>
+      <button class="btn" id="adminBtn">Admin</button>
+    </div>
+  </div>
+  <div class="search"><input id="q" placeholder="Search universities..."></div>
+</header>
+
+<main>
+  <div class="bar">
+    <button class="btn pri" onclick="openEditor()">＋ Add University</button>
+    <button class="btn gray" onclick="exportData()">⬇ Backup</button>
+    <button class="btn gray" onclick="document.getElementById('imp').click()">⬆ Import</button>
+    <button class="btn gray" onclick="changePass()">🔑 Password</button>
+    <input type="file" id="imp" accept=".json" hidden>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>No results found</div>
+</main>
+
+<!-- Details -->
+<div class="modal" id="detail"><div class="sheet" id="detailBox"></div></div>
+
+<!-- Editor -->
+<div class="modal" id="editor"><div class="sheet">
+  <h2 id="edTitle">Add University</h2>
+  <div class="note">You can write in Bangla or English. Select any text and use B / I / U / color to style it.</div>
+
+  <label>Image (upload)</label>
+  <input type="file" id="fImg" accept="image/*">
+  <label>Or image URL</label>
+  <input type="url" id="fImgUrl" placeholder="https://...">
+  <label>Card background color</label>
+  <input type="color" id="fBg" value="#fde68a" style="width:60px;height:38px;border:0">
+
+  <label>Heading (shown on card)</label>
+  <div id="e_head"></div>
+  <label>Title (shown on card)</label>
+  <div id="e_title"></div>
+  <label>Criteria / Details</label>
+  <div id="e_crit"></div>
+  <label>Extra info (dates, fees, etc.)</label>
+  <div id="e_extra"></div>
+
+  <label>Apply link</label>
+  <input type="url" id="fApply" placeholder="https://...">
+  <label>Result link</label>
+  <input type="url" id="fResult" placeholder="https://...">
+  <label>Other links (one per line: Name | URL)</label>
+  <textarea id="fOther" rows="3" placeholder="Admission Circular | https://..."></textarea>
+
+  <div class="row">
+    <button class="btn gray" onclick="closeEditor()">Cancel</button>
+    <button class="btn pri" onclick="saveItem()">Save</button>
+  </div>
+</div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY='admissionData', PKEY='admissionPass';
+let data=JSON.parse(localStorage.getItem(KEY)||'null')||[{
+  id:1,bg:'#fde68a',img:'',
+  head:'<b>University of Dhaka</b>',
+  title:'<font color="#b91c1c">Admission Test 2026-27</font>',
+  crit:'<b>Minimum GPA:</b> As per official circular.<br>বিস্তারিত অফিসিয়াল বিজ্ঞপ্তি দেখুন।',
+  extra:'<u>Application deadline:</u> Add date here',
+  apply:'',result:'',other:''
+}];
+let isAdmin=false, editId=null, imgData='';
+const save=()=>localStorage.setItem(KEY,JSON.stringify(data));
+
+/* ---------- Safe HTML ---------- */
+const OK=['B','STRONG','I','EM','U','BR','DIV','P','FONT','SPAN','UL','OL','LI'];
+function clean(html){
+  const d=new DOMParser().parseFromString('<div>'+(html||'')+'</div>','text/html').body.firstChild;
+  (function walk(n){
+    [...n.childNodes].forEach(c=>{
+      if(c.nodeType===3)return;
+      if(c.nodeType!==1){c.remove();return}
+      walk(c);
+      if(!OK.includes(c.tagName)){c.replaceWith(...c.childNodes);return}
+      const col=c.getAttribute('color'), st=c.style&&c.style.color;
+      [...c.attributes].forEach(a=>c.removeAttribute(a.name));
+      if(col&&/^#?[\w(),.\s%]+$/.test(col))c.setAttribute('color',col);
+      if(st)c.style.color=st;
+    });
+  })(d);
+  return d.innerHTML;
+}
+const url=u=>{u=(u||'').trim();if(!u)return'';return /^https?:\/\//i.test(u)?u:'https://'+u};
+const lum=h=>{const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*((n>>8)&255)+.114*(n&255))/255};
+
+/* ---------- Rich text editor ---------- */
+function makeEditor(id){
+  $(id).innerHTML=`<div class="tb">
+    <button type="button" data-c="bold"><b>B</b></button>
+    <button type="button" data-c="italic"><i>I</i></button>
+    <button type="button" data-c="underline"><u>U</u></button>
+    <input type="color" value="#dc2626" title="Text color">
+    <button type="button" data-c="removeFormat" title="Clear formatting">✕</button>
+  </div><div class="ed" contenteditable="true"></div>`;
+  const box=$(id);
+  box.querySelectorAll('button').forEach(b=>{
+    b.onmousedown=e=>{e.preventDefault();document.execCommand(b.dataset.c)};
+  });
+  const col=box.querySelector('input');
+  col.oninput=()=>{document.execCommand('foreColor',false,col.value)};
+}
+['e_head','e_title','e_crit','e_extra'].forEach(makeEditor);
+const ed=id=>$(id).querySelector('.ed');
+
+/* ---------- Cards ---------- */
+function render(){
+  const q=$('q').value.trim().toLowerCase();
+  const list=data.filter(x=>(x.head+' '+x.title).replace(/<[^>]+>/g,'').toLowerCase().includes(q));
+  $('grid').innerHTML=list.map(x=>{
+    const dark=lum(x.bg)<.5, tc=dark?'#fff':'#0f172a';
+    return `<div class="card" style="background:${x.bg};color:${tc}" onclick="showDetail(${x.id})">
+      ${x.img?`<img src="${x.img}" alt="">`:`<div class="noimg">🏛️</div>`}
+      <div class="body"><div class="hd">${clean(x.head)}</div><div class="tt">${clean(x.title)}</div></div>
+      <div class="ctl"><button onclick="event.stopPropagation();openEditor(${x.id})">✏️</button><button onclick="event.stopPropagation();del(${x.id})">🗑️</button></div>
+    </div>`}).join('');
+  $('empty').hidden=list.length>0;
+}
+function showDetail(id){
+  const x=data.find(v=>v.id===id); if(!x)return;
+  let links='';
+  if(url(x.apply))links+=`<a class="a-apply" href="${url(x.apply)}" target="_blank" rel="noopener">📝 Apply Now</a>`;
+  if(url(x.result))links+=`<a class="a-result" href="${url(x.result)}" target="_blank" rel="noopener">📊 View Result</a>`;
+  (x.other||'').split('\n').forEach(l=>{
+    const [n,u]=l.split('|').map(s=>(s||'').trim());
+    if(n&&url(u))links+=`<a class="a-other" href="${url(u)}" target="_blank" rel="noopener">${n.replace(/</g,'&lt;')}</a>`;
+  });
+  $('detailBox').innerHTML=`
+    ${x.img?`<img class="dimg" src="${x.img}" alt="">`:''}
+    <h2>${clean(x.head)}</h2><div class="sub">${clean(x.title)}</div>
+    ${links?`<div class="links">${links}</div>`:''}
+    ${x.crit?`<div class="sec"><h4>Criteria / Details</h4>${clean(x.crit)}</div>`:''}
+    ${x.extra?`<div class="sec"><h4>Extra Info</h4>${clean(x.extra)}</div>`:''}
+    <button class="btn gray" style="width:100%" onclick="$('detail').classList.remove('show')">Close</button>`;
+  $('detail').classList.add('show');
+}
+$('detail').onclick=e=>{if(e.target.id==='detail')$('detail').classList.remove('show')};
+$('q').oninput=render;
+
+/* ---------- Admin ---------- */
+$('adminBtn').onclick=()=>{
+  if(isAdmin){isAdmin=false;document.body.classList.remove('admin');$('adminBtn').textContent='Admin';return}
+  const p=prompt('Enter admin password:');
+  if(p===null)return;
+  if(p===(localStorage.getItem(PKEY)||'admin123')){
+    isAdmin=true;document.body.classList.add('admin');$('adminBtn').textContent='Logout';
+  }else alert('Wrong password');
+};
+function changePass(){
+  const p=prompt('New password:');
+  if(p){localStorage.setItem(PKEY,p);alert('Password updated')}
+}
+function openEditor(id){
+  editId=id||null; imgData='';
+  const x=id?data.find(v=>v.id===id):{};
+  $('edTitle').textContent=id?'Edit University':'Add University';
+  ed('e_head').innerHTML=x.head||''; ed('e_title').innerHTML=x.title||'';
+  ed('e_crit').innerHTML=x.crit||''; ed('e_extra').innerHTML=x.extra||'';
+  $('fApply').value=x.apply||''; $('fResult').value=x.result||'';
+  $('fOther').value=x.other||''; $('fBg').value=x.bg||'#fde68a';
+  $('fImg').value=''; $('fImgUrl').value=(x.img&&!x.img.startsWith('data:'))?x.img:'';
+  imgData=(x.img&&x.img.startsWith('data:'))?x.img:'';
+  $('editor').classList.add('show');
+}
+function closeEditor(){$('editor').classList.remove('show')}
+$('fImg').onchange=e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{const im=new Image();im.onload=()=>{
+    const s=Math.min(1,700/im.width),c=document.createElement('canvas');
+    c.width=im.width*s;c.height=im.height*s;
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    imgData=c.toDataURL('image/jpeg',.8);
+  };im.src=r.result};
+  r.readAsDataURL(f);
+};
+function saveItem(){
+  const item={
+    id:editId||Date.now(),bg:$('fBg').value,
+    img:imgData||url($('fImgUrl').value),
+    head:clean(ed('e_head').innerHTML),title:clean(ed('e_title').innerHTML),
+    crit:clean(ed('e_crit').innerHTML),extra:clean(ed('e_extra').innerHTML),
+    apply:$('fApply').value.trim(),result:$('fResult').value.trim(),other:$('fOther').value.trim()
+  };
+  if(!item.head.replace(/<[^>]+>/g,'').trim()){alert('Please enter a heading');return}
+  if(editId)data=data.map(v=>v.id===editId?item:v);else data.unshift(item);
+  try{save()}catch(e){alert('Storage is full. Use a smaller image.');return}
+  closeEditor();render();
+}
+function del(id){
+  if(!confirm('Delete this entry?'))return;
+  data=data.filter(v=>v.id!==id);save();render();
+}
+function exportData(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));
+  a.download='admission-backup.json';a.click();
+}
+$('imp').onchange=e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;data=d;save();render();alert('Import successful')}catch{alert('Invalid file')}};
+  r.readAsText(f);
+};
+render();
+
+/* ---------- PWA install ---------- */
+let deferred=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferred=e;$('installBtn').hidden=false;
+});
+$('installBtn').onclick=async()=>{
+  if(!deferred)return;
+  deferred.prompt();await deferred.userChoice;
+  deferred=null;$('installBtn').hidden=true;
+};
+window.addEventListener('appinstalled',()=>{$('installBtn').hidden=true});
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
